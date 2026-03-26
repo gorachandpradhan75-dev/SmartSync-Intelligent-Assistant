@@ -1,0 +1,16 @@
+{
+  "name": "smart-assistant",
+  "version": "1.0.0",
+  "description": "Smart Web Assistant with Login, MySQL, Voice Input and Dark Mode",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Your Name",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "express": "^4.18.2",
+    "mysql2": "^3.9.7"
+  }
+}

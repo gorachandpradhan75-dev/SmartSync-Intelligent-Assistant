@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Assistant</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="chat-container">
+
+    <!-- Header -->
+    <div class="header">
+        Smart Assistant 🤖
+        <button onclick="toggleDark()">🌙</button>
+    </div>
+
+    <!-- Chat -->
+    <div id="chat"></div>
+
+    <!-- Input Area -->
+    <div class="input-area">
+        <input type="text" id="input" placeholder="Type message..." autocomplete="off">
+
+        <button onclick="startVoice()">🎤</button>
+        <button onclick="send()">Send</button>
+    </div>
+
+</div>
+
+<script>
+
+// 🔐 Check login
+let user = localStorage.getItem("user");
+
+if (!user) {
+    window.location.href = "login.html";
+}
+
+// 📤 Send message
+async function send() {
+    let inputBox = document.getElementById("input");
+    let input = inputBox.value.trim();
+
+    if (input === "") return;
+
+    let chat = document.getElementById("chat");
+
+    // User message
+    let userMsg = document.createElement("div");
+    userMsg.className = "user";
+    userMsg.innerText = input;
+    chat.appendChild(userMsg);
+
+    // Typing...
+    let typing = document.createElement("div");
+    typing.className = "bot";
+    typing.innerText = "Typing...";
+    chat.appendChild(typing);
+
+    try {
+        let res = await fetch('/command', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: input, username: user })
+        });
+
+        let data = await res.json();
+
+        typing.remove();
+
+        // Bot reply
+        let botMsg = document.createElement("div");
+        botMsg.className = "bot";
+        botMsg.innerText = data.reply;
+        chat.appendChild(botMsg);
+
+    } catch {
+        typing.innerText = "Server error";
+    }
+
+    inputBox.value = "";
+    chat.scrollTop = chat.scrollHeight;
+}
+
+// 🎤 Voice Input
+function startVoice() {
+    const recognition = new webkitSpeechRecognition();
+    recognition.start();
+
+    recognition.onresult = function(event) {
+        document.getElementById("input").value = event.results[0][0].transcript;
+    };
+}
+
+// 🌙 Dark Mode
+function toggleDark() {
+    document.body.classList.toggle("dark");
+}
+
+// ⌨️ Enter key
+document.getElementById("input").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") send();
+});
+
+</script>
+
+</body>
+</html>

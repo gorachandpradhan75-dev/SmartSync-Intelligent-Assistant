@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(135deg, #00c9ff, #92fe9d);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+        }
+
+        a {
+            display: block;
+            margin-top: 10px;
+        }
+
+        .msg {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+    <h2>🆕 Register</h2>
+
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+
+    <button onclick="register()">Register</button>
+
+    <p id="msg"></p>
+
+    <a href="login.html">Already have account? Login</a>
+</div>
+
+<script>
+async function register() {
+    let username = document.getElementById("username").value.trim();
+    let password = document.getElementById("password").value.trim();
+
+    if (!username || !password) {
+        document.getElementById("msg").innerText = "Fill all fields";
+        document.getElementById("msg").className = "error";
+        return;
+    }
+
+    let res = await fetch('/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    });
+
+    let data = await res.json();
+
+    if (data.success) {
+        document.getElementById("msg").innerText = "Registration successful!";
+        document.getElementById("msg").className = "msg";
+
+        setTimeout(() => {
+            window.location.href = "login.html";
+        }, 1500);
+    } else {
+        document.getElementById("msg").innerText = "User already exists";
+        document.getElementById("msg").className = "error";
+    }
+}
+</script>
+
+</body>
+</html>
